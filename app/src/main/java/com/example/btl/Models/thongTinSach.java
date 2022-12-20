@@ -1,20 +1,59 @@
 package com.example.btl.Models;
 
+import android.widget.Adapter;
+
 import java.io.Serializable;
 
 public class thongTinSach implements Serializable {
-    private String tenSach, theLoai, tacGia, path;
+    private String  id, tenSach, theLoai, tacGia, moTa, viTri, path;
     private int soLuong;
 
     public thongTinSach() {
     }
 
-    public thongTinSach(String tenSach, String theLoai, String tacGia, String path, int soLuong) {
+//    public thongTinSach(String tenSach, String theLoai, String tacGia, String moTa, String viTri, String path, int soLuong) {
+//        this.tenSach = tenSach;
+//        this.theLoai = theLoai;
+//        this.tacGia = tacGia;
+//        this.moTa = moTa;
+//        this.viTri = viTri;
+//        this.path = path;
+//        this.soLuong = soLuong;
+//    }
+
+    public thongTinSach(String id, String tenSach, String theLoai, String tacGia, String moTa, String viTri, String path, int soLuong) {
+        this.id = id;
         this.tenSach = tenSach;
         this.theLoai = theLoai;
         this.tacGia = tacGia;
+        this.moTa = moTa;
+        this.viTri = viTri;
         this.path = path;
         this.soLuong = soLuong;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getViTri() {
+        return viTri;
+    }
+
+    public void setViTri(String viTri) {
+        this.viTri = viTri;
+    }
+
+    public String getMoTa() {
+        return moTa;
+    }
+
+    public void setMoTa(String moTa) {
+        this.moTa = moTa;
     }
 
     public String getTenSach() {
@@ -60,9 +99,12 @@ public class thongTinSach implements Serializable {
     @Override
     public String toString() {
         return "thongTinSach{" +
-                "tenSach='" + tenSach + '\'' +
+                "id='" + id + '\'' +
+                ", tenSach='" + tenSach + '\'' +
                 ", theLoai='" + theLoai + '\'' +
                 ", tacGia='" + tacGia + '\'' +
+                ", moTa='" + moTa + '\'' +
+                ", viTri='" + viTri + '\'' +
                 ", path='" + path + '\'' +
                 ", soLuong=" + soLuong +
                 '}';

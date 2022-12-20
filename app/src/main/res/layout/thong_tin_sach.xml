@@ -28,23 +28,23 @@
             android:layout_gravity="center_vertical"
             android:paddingHorizontal="10dp">
 
-            <TextView
-                android:id="@+id/tvTenSach"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:paddingVertical="10dp"
-                android:text="Tên Sách"
-                android:textColor="@color/black"
-                android:textSize="25dp"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/tvTenSach"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="10dp"
+                    android:text="Tên Sách"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:textStyle="bold|italic"
+                    android:textAllCaps="true" />
 
         <TextView
             android:id="@+id/tvTenTG"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:textSize="20dp"
+            android:textSize="18dp"
             android:textStyle="italic"
             android:textColor="#706E6E"
             android:layout_marginTop="4dp"
@@ -63,7 +63,7 @@
                 android:layout_weight="1"
                 android:paddingVertical="4dp"
                 android:text="Thể loại"
-                android:textColor="@color/teal_700"
+                android:textColor="#01579B"
                 android:textSize="22dp"
                 android:textStyle="bold" />
 
@@ -74,7 +74,7 @@
                 android:layout_weight="2"
                 android:paddingVertical="4dp"
                 android:textSize="18dp"
-                android:textColor="@color/teal_700"
+                android:textColor="#01579B"
                 android:text="SL: 10" />
             </LinearLayout>
         </LinearLayout>

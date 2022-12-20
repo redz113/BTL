@@ -1,56 +1,76 @@
 package com.example.btl.Adapter;
 
-import android.app.Activity;
-import android.graphics.Bitmap;
+import android.content.Context;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.example.btl.Models.thongTinSach;
 import com.example.btl.R;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
+import java.util.List;
 
-public class thongTinSachAdapter extends ArrayAdapter<thongTinSach> {
-    Activity context;
-    int resource;
+public  class thongTinSachAdapter extends BaseAdapter {
+    Context context;
+    int layout;
+    List<thongTinSach> arrSach;
 
-    public thongTinSachAdapter(Activity context, int resource){
-        super(context, resource);
+    public thongTinSachAdapter(Context context, int layout, List<thongTinSach> arrSach) {
         this.context = context;
-        this.resource = resource;
+        this.layout = layout;
+        this.arrSach = arrSach;
     }
 
-    @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        LayoutInflater inflater = this.context.getLayoutInflater();
-        View custumView = inflater.inflate(this.resource, null);
+    public int getCount() {
+        return arrSach.size();
+    }
 
-        TextView tenSach = custumView.findViewById(R.id.tvTenSach);
-        TextView theLoai = custumView.findViewById(R.id.tvTheLoai);
-        TextView tenTacGia = custumView.findViewById(R.id.tvTenTG);
-        TextView soLuong = custumView.findViewById(R.id.tvSL);
-        ImageView imgSach = custumView.findViewById(R.id.imgSP);
+    @Override
+    public Object getItem(int i) {
+        return arrSach.get(i);
+    }
 
-        thongTinSach tt = getItem(position);
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
 
-        tenSach.setText(tt.getTenSach());
-        theLoai.setText(tt.getTheLoai());
-        tenTacGia.setText(tt.getTacGia());
-        soLuong.setText("SL: " + tt.getSoLuong());
-        imgSach.setImageURI(Uri.parse(tt.getPath()));
-//        Picasso.with(this.context).load(tt.getPath()).into(imgSach);
+    private  class ViewHolder{
+        TextView tenSach, tacGia, theLoai, soLuong;
+        ImageView imgSach;
+    }
 
-        return custumView;
+    @Override
+    public View getView(int i, View view, ViewGroup viewGroup) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View rView = view;
+        ViewHolder holder = new ViewHolder();
+
+        if (rView == null){
+            rView = inflater.inflate(layout, null);
+            holder.tenSach = rView.findViewById(R.id.tvTenSach);
+            holder.tacGia = rView.findViewById(R.id.tvTenTG);
+            holder.theLoai = rView.findViewById(R.id.tvTheLoai);
+            holder.soLuong = rView.findViewById(R.id.tvSL);
+            holder.imgSach = rView.findViewById(R.id.imgSP);
+            rView.setTag(holder);
+        }else {
+            holder = (ViewHolder) rView.getTag();
+        }
+
+        //Gán
+        holder.tenSach.setText(arrSach.get(i).getTenSach());
+        holder.tacGia.setText(arrSach.get(i).getTacGia());
+        holder.theLoai.setText(arrSach.get(i).getTheLoai());
+        holder.soLuong.setText("SL: " + arrSach.get(i).getSoLuong());
+//        holder.imgSach.setImageURI(Uri.parse(arrSach.get(i).getPath()));
+        Picasso.with(this.context).load(arrSach.get(i).getPath()).into(holder.imgSach);
+        return rView;
     }
 }
