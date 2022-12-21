@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <item
+        android:id="@+id/QLS"
+        android:title="Quản lý sách" />
+
+    <item
+        android:id="@+id/allPhieuDuyet"
+        android:title="Tất cả phiếu duyệt" />
+
+    <item
+        android:id="@+id/phieuDaDuyet"
+        android:title="Phiếu đã duyệt" />
+
+    <item
+        android:id="@+id/phieuChuaDuyet"
+        android:title="Phiếu chưa duyệt" />
+
+
+    <item
+        android:id="@+id/app_bar_search"
+        android:icon="@drawable/search"
+        android:title="Search"
+        app:showAsAction="always"
+        app:actionViewClass="android.widget.SearchView" />
+</menu>

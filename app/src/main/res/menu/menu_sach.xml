@@ -2,14 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/QLPM"
+        android:title="Quản lý phiếu mượn" />
+    <item
         android:id="@+id/search"
         android:icon="@drawable/search"
         android:title="Search"
         app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
     <item
         android:id="@+id/addSach"
-        android:title="add"
-        android:icon="@drawable/add"
-        app:showAsAction="always"/>
+        android:title="Thêm sách mới"
+        android:icon="@drawable/add" />
 </menu>

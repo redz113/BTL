@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_constraintWidth_max="5000dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#80D8FF"
+    android:gravity="center"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"></TextView>
+
+        <ImageButton
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            app:srcCompat="@drawable/close" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Duyệt Trả sách"
+            android:textStyle="bold|italic"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="25dp"></TextView>
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mã phiếu: "
+            android:textStyle="bold|italic"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="18dp"></TextView>
+
+        <EditText
+            android:id="@+id/edtMaPhieu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:textSize="18dp"
+            android:textColor="@color/black"
+            android:text="Mã phiếu"></EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Người trả: "
+            android:textStyle="bold|italic"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="18dp"></TextView>
+
+        <EditText
+            android:id="@+id/edtNguoiTra"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:textSize="18dp"
+            android:textColor="@color/black"
+            android:text="họ tên..."></EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="wrap_content"
+            android:text="Ngày mượn: "
+            android:textStyle="bold|italic"
+            android:textColor="@color/black"
+            android:textSize="18dp"></TextView>
+
+        <EditText
+            android:id="@+id/edtNgayMuon"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:textSize="18dp"
+            android:text="yyyy/mm/dd"
+            android:textColor="@color/black"
+            android:inputType="none"></EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="wrap_content"
+            android:text="Ngày trả: "
+            android:textStyle="bold|italic"
+            android:textColor="@color/black"
+            android:textSize="18dp"></TextView>
+
+        <EditText
+            android:id="@+id/edtNgayTra"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:textSize="18dp"
+            android:text="yyyy/mm/dd"
+            android:textColor="@color/black"
+            android:inputType="none"></EditText>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:textStyle="bold|italic"
+        android:textColor="@color/black"
+        android:paddingTop="6dp"
+        android:background="#FFD740"
+        android:text="Thông tin sách mượn:                  "></TextView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFD740"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical"
+            android:paddingHorizontal="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="10dp"
+                    android:text="Tên Sách: "
+                    android:textColor="@color/black"
+                    android:textSize="14dp"
+                    android:textStyle="italic" />
+
+                <EditText
+                    android:id="@+id/edtTenSach"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:textSize="14dp"
+                    android:textColor="@color/black"
+                    android:textAllCaps="true"
+                    android:text="Tên sách..."></EditText>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14dp"
+                    android:textColor="@color/black"
+                    android:textStyle="italic"
+                    android:text="Vị trí:  " />
+
+                <EditText
+                    android:id="@+id/edtViTri"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:textSize="14dp"
+                    android:textColor="@color/black"
+                    android:text="A01"></EditText>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/layoutDuyet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp"
+        android:gravity="center">
+        <Button
+            android:id="@+id/btnDuyet"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#0091EA"
+            android:textColor="@color/white"
+            android:text="Duyệt" />
+
+        <Button
+            android:id="@+id/btnHuyDuyet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingHorizontal="30dp"
+            android:backgroundTint="#FF5252"
+            android:enabled="false"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+
+
+</LinearLayout>

@@ -3,9 +3,11 @@ package com.example.btl;
 import static android.provider.MediaStore.Images.Media.getBitmap;
 
 import static com.example.btl.R.layout.dialog_sua_xoa_sach;
+import static com.example.btl.R.layout.dialog_them_muon;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -15,21 +17,24 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.btl.Adapter.thongTinSachAdapter;
+import com.example.btl.Models.phieuMuon;
 import com.example.btl.Models.thongTinSach;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,13 +44,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -54,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
     ListView lvSach;
     List<thongTinSach> listSach;
     thongTinSachAdapter adapter;
-
 
     ImageView imgSach;
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -66,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mData       = FirebaseDatabase.getInstance().getReference();
-        addViews();
+        lvSach      = findViewById(R.id.lvSach);
+
         listSach    = new ArrayList<>();
 
         adapter = new thongTinSachAdapter(MainActivity.this, R.layout.thong_tin_sach, listSach);
@@ -76,18 +81,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 thongTinSach sach = listSach.get(i);
-                //Toast.makeText(MainActivity.this, sach.getMoTa(), Toast.LENGTH_SHORT).show();
                 showSuaXoa(sach);
             }
         });
-
         LoadData();
     }
-
-    public void addViews(){
-        lvSach      = findViewById(R.id.lvSach);
-    }
-
 
 
     @Override
@@ -101,30 +99,41 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.addSach:
                 showThemSachDialog();
+                break;
             case R.id.search:
                 showSeachDialog();
-//            case R.id.btnInfoED:
-//                showSuaXoa();
+                break;
+            case R.id.QLPM:
+                showQLPM();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void showQLPM() {
+        Intent intent = new Intent(MainActivity.this, MainActivityPhieuMuon.class);
+        startActivity(intent);
+    }
+
     private void showSuaXoa(thongTinSach sach) {
         Dialog dialogSuaXoa = new Dialog(MainActivity.this);
-        dialogSuaXoa.requestWindowFeature(Window.FEATURE_ACTION_BAR);
+        dialogSuaXoa.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogSuaXoa.setContentView(dialog_sua_xoa_sach);
+        Window window = dialogSuaXoa.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         dialogSuaXoa.setCanceledOnTouchOutside(false);
 
         //Ánh xạ
         TextView tvTenSachED, tvViTriED, tvMoTaED;
-        Button btnSua, btnXoa, btnTroLai;
+        Button btnSua, btnXoa, btnThemMuon ,btnTroLai;
 
         tvTenSachED = dialogSuaXoa.findViewById(R.id.tvTenSachED);
         tvMoTaED    = dialogSuaXoa.findViewById(R.id.tvMoTaED);
         tvViTriED   = dialogSuaXoa.findViewById(R.id.tvViTriED);
         btnSua      = dialogSuaXoa.findViewById(R.id.btnSua);
         btnXoa      = dialogSuaXoa.findViewById(R.id.btnXoa);
-        btnTroLai      = dialogSuaXoa.findViewById(R.id.btnTroLai);
+        btnThemMuon = dialogSuaXoa.findViewById(R.id.btnThemMuon);
+        btnTroLai   = dialogSuaXoa.findViewById(R.id.btnTroLai);
 
         tvTenSachED.setText(sach.getTenSach());
         tvMoTaED.setText(sach.getMoTa());
@@ -169,6 +178,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnThemMuon.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View view) {
+                if (sach.getSoLuong() == 0){
+                    Toast.makeText(MainActivity.this, "Sách đã mượn hết!", Toast.LENGTH_SHORT).show();
+                }else {
+                    showThemPhieuMuon(sach);
+                    dialogSuaXoa.dismiss();
+                }
+            }
+        });
+
         btnTroLai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -178,10 +200,78 @@ public class MainActivity extends AppCompatActivity {
         dialogSuaXoa.show();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void showThemPhieuMuon(thongTinSach sach) {
+        Dialog dialogThem = new Dialog(MainActivity.this);
+        dialogThem.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogThem.setContentView(dialog_them_muon);
+        Window window = dialogThem.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        dialogThem.setCanceledOnTouchOutside(false);
+
+        //Ánh xạ
+        TextView tvTenSach;
+        EditText edtNguoiMuon, edtSDT, edtNgayMuon, edtNgayTra, edtGhiChu;
+        Button btnThem, btnHuy;
+
+        tvTenSach       = dialogThem.findViewById(R.id.tvTenSach);
+        edtNguoiMuon    = dialogThem.findViewById(R.id.edtNguoiMuon);
+        edtSDT          = dialogThem.findViewById(R.id.edtSDT);
+        edtNgayMuon     = dialogThem.findViewById(R.id.edtNgayMuon);
+//        edtNgayTra      = dialogThem.findViewById(R.id.edtNgayTra);
+        edtGhiChu       = dialogThem.findViewById(R.id.edtGhiChu);
+        btnThem         = dialogThem.findViewById(R.id.btnThem);
+        btnHuy          = dialogThem.findViewById(R.id.btnHuy);
+
+        String date = LocalDate.now() + "";
+        edtNgayMuon.setText(date);
+        tvTenSach.setText(sach.getTenSach());
+
+        btnThem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar time = Calendar.getInstance();
+                String id, tenSachMuon, nguoiMuon, SDT, ngayMuon, ngayTra, ghiChu;
+                int trangThai = 0;
+
+                id = time.getTimeInMillis() + "";
+                tenSachMuon = tvTenSach.getText().toString().trim();
+                nguoiMuon   = edtNguoiMuon.getText().toString().trim();
+                SDT         = edtSDT.getText().toString().trim();
+                ngayMuon    = edtNgayMuon.getText().toString().trim();
+                ngayTra     = "null";
+                ghiChu      = edtGhiChu.getText().toString().trim();
+
+                if (nguoiMuon.length() > 0 && SDT.length() > 0
+                        && ngayTra.length() > 0){
+                    phieuMuon p = new phieuMuon(id, sach.getId(), tenSachMuon, nguoiMuon, SDT, ngayMuon, ngayTra, ghiChu, trangThai);
+                    mData.child("phieuMuon").child(id).setValue(p);
+                    int sl = sach.getSoLuong() - 1;
+                    mData.child("thongTinSach").child(sach.getId()).child("soLuong").setValue(sl);
+                    LoadData();
+                    Toast.makeText(MainActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                    dialogThem.dismiss();
+                }else {
+                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnHuy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogThem.dismiss();
+            }
+        });
+        dialogThem.show();
+    }
+
     private void showSuaDialog(thongTinSach sach) {
         Dialog dialogSua = new Dialog(MainActivity.this);
-        dialogSua.requestWindowFeature(Window.FEATURE_OPTIONS_PANEL);
+        dialogSua.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogSua.setContentView(R.layout.dialog_sua_sach);
+        Window window = dialogSua.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         dialogSua.setCanceledOnTouchOutside(false);
 
         //Ánh Xạ
@@ -219,25 +309,19 @@ public class MainActivity extends AppCompatActivity {
                     String viTri        = edtViTri.getText().toString().trim();
                     int soLuong         = Integer.parseInt(edtSL.getText().toString());
 
-                    if (tenSach.length() > 0 && theLoai.length() > 0 && moTa.length() > 0
-                            && tacGia.length() > 0 && soLuong > 0 ) {
-
                         thongTinSach sachUpdate = new thongTinSach(sach.getId(), tenSach, theLoai, tacGia, moTa, viTri, sach.getPath(), soLuong);
                         mData.child( "thongTinSach").child(sach.getId()).setValue(sachUpdate, new DatabaseReference.CompletionListener() {
                             @Override
                             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                                try {
                                     if (error == null){
                                         LoadData();
                                         Toast.makeText(MainActivity.this, "Cập Nhập Thành Công", Toast.LENGTH_SHORT).show();
                                         dialogSua.dismiss();
-                                    }
-                                }catch (Exception e){
+                                    }else {
                                     Toast.makeText(MainActivity.this, "Cập Nhập Thất Bại", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
-                    }
                 }catch (Exception e){
                     Toast.makeText(MainActivity.this, "Error: Thông Tin Không Hợp Lệ", Toast.LENGTH_SHORT).show();
                 }
@@ -254,6 +338,8 @@ public class MainActivity extends AppCompatActivity {
         Dialog dialogThemSach = new Dialog(this);
         dialogThemSach.requestWindowFeature(Window.FEATURE_ACTION_BAR);
         dialogThemSach.setContentView(R.layout.dialog_them_sach);
+        Window window = dialogThemSach.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         dialogThemSach.setCanceledOnTouchOutside(false);
 
         mData = FirebaseDatabase.getInstance().getReference();
@@ -306,7 +392,6 @@ public class MainActivity extends AppCompatActivity {
                                 public void onSuccess(Uri uri) {
                                     String getTime = time.getTimeInMillis() + "";
                                     String path = uri.toString();
-//                                    Log.d("AAA", path);
 
                                     try {
                                         String tenSach      = edtTenSach.getText().toString().trim();
@@ -316,15 +401,13 @@ public class MainActivity extends AppCompatActivity {
                                         String viTri        = edtViTri.getText().toString().trim();
                                         int soLuong         = Integer.parseInt(edtSL.getText().toString());
 
-                                        if (tenSach.length() > 0 && theLoai.length() > 0 && moTa.length() > 0
-                                                && tacGia.length() > 0 && path.length() > 0 && soLuong > 0 ) {
-
                                             thongTinSach sach = new thongTinSach(getTime, tenSach, theLoai, tacGia, moTa, viTri, path, soLuong);
                                             mData.child( "thongTinSach").child(getTime).setValue(sach, new DatabaseReference.CompletionListener() {
                                                 @Override
                                                 public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                                                     try {
                                                         if (error == null){
+                                                            LoadData();
                                                             Toast.makeText(MainActivity.this, "Thêm Thành Công", Toast.LENGTH_SHORT).show();
                                                             dialogThemSach.dismiss();
                                                         }
@@ -333,9 +416,9 @@ public class MainActivity extends AppCompatActivity {
                                                     }
                                                 }
                                             });
-                                        }
+//                                        }
                                     }catch (Exception e){
-                                        Toast.makeText(MainActivity.this, "Error: Thông Tin Không Hợp Lệ", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MainActivity.this, "Error: Hãy nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });

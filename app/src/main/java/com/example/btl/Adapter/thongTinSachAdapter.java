@@ -1,6 +1,7 @@
 package com.example.btl.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,28 +50,24 @@ public  class thongTinSachAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rView = view;
-        ViewHolder holder = new ViewHolder();
+        View rView = inflater.inflate(this.layout, null);
 
-        if (rView == null){
-            rView = inflater.inflate(layout, null);
-            holder.tenSach = rView.findViewById(R.id.tvTenSach);
-            holder.tacGia = rView.findViewById(R.id.tvTenTG);
-            holder.theLoai = rView.findViewById(R.id.tvTheLoai);
-            holder.soLuong = rView.findViewById(R.id.tvSL);
-            holder.imgSach = rView.findViewById(R.id.imgSP);
-            rView.setTag(holder);
-        }else {
-            holder = (ViewHolder) rView.getTag();
-        }
+        TextView tenSach = rView.findViewById(R.id.tvTenSach);
+        TextView tacGia = rView.findViewById(R.id.tvTenTG);
+        TextView theLoai = rView.findViewById(R.id.tvTheLoai);
+        TextView soLuong = rView.findViewById(R.id.tvSL);
+        ImageView imgSach = rView.findViewById(R.id.imgSP);
 
+        thongTinSach tt = (thongTinSach) getItem(i);
         //Gán
-        holder.tenSach.setText(arrSach.get(i).getTenSach());
-        holder.tacGia.setText(arrSach.get(i).getTacGia());
-        holder.theLoai.setText(arrSach.get(i).getTheLoai());
-        holder.soLuong.setText("SL: " + arrSach.get(i).getSoLuong());
-//        holder.imgSach.setImageURI(Uri.parse(arrSach.get(i).getPath()));
-        Picasso.with(this.context).load(arrSach.get(i).getPath()).into(holder.imgSach);
+        tenSach.setText(tt.getTenSach());
+        tacGia.setText(tt.getTacGia());
+        theLoai.setText(tt.getTheLoai());
+        soLuong.setText("SL: " + tt.getSoLuong());
+        if (tt.getSoLuong() == 0){
+            soLuong.setTextColor(Color.parseColor("#FF1744"));
+        };
+        Picasso.with(this.context).load(tt.getPath()).into(imgSach);
         return rView;
     }
 }

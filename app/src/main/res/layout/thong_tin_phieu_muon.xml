@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingLeft="10dp">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="4"
+        android:paddingBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FF9100"
+                android:text="Mã phiếu: "
+                android:textStyle="bold|italic"></TextView>
+            <TextView
+                android:id="@+id/tvMaPhieu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FF9100"
+                android:text="id..."></TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="Người mượn: "
+                android:textStyle="bold|italic"></TextView>
+            <TextView
+                android:id="@+id/tvNguoiMuon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Người mượn..."></TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="Số điện thoại: "
+                android:textStyle="bold|italic"></TextView>
+            <TextView
+                android:id="@+id/tvSDT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SDT..."></TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="Tên sách: "
+                android:textStyle="bold|italic"></TextView>
+            <TextView
+                android:id="@+id/tvTenSach"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tên sách..."></TextView>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="3"
+        android:layout_gravity="bottom"
+        android:paddingLeft="4dp"
+        android:paddingBottom="4dp">
+
+        <TextView
+            android:id="@+id/tvTrangThai"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chưa trả sách"
+            android:textColor="#FF1744"></TextView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="Ngày mượn: "
+                android:textStyle="bold|italic"></TextView>
+            <TextView
+                android:id="@+id/tvNgayMuon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="2022-12-21"></TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="Ngày trả: "
+                android:textStyle="bold|italic"></TextView>
+            <TextView
+                android:id="@+id/tvNgayTra"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""></TextView>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
