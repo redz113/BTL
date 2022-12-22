@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -56,6 +57,7 @@ import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    SearchView searchView;
     ListView lvSach;
     List<thongTinSach> listSach;
     thongTinSachAdapter adapter;
@@ -91,7 +93,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_sach, menu);
-        return super.onCreateOptionsMenu(menu);
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+        return true;
     }
 
     @Override
@@ -99,9 +115,6 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.addSach:
                 showThemSachDialog();
-                break;
-            case R.id.search:
-                showSeachDialog();
                 break;
             case R.id.QLPM:
                 showQLPM();
@@ -151,8 +164,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Delete");
-                builder.setMessage("Ban thực sự muốn xóa?");
+                builder.setTitle("Xóa sách?");
                 builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -164,12 +176,14 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         StorageReference storageRef = storage.getReference("imagesSach/image" + sach.getId() + ".jpeg");
                         storageRef.delete();
+
                         mData.child("thongTinSach").child(sach.getId()).removeValue(new DatabaseReference.CompletionListener() {
                             @Override
                             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                                 Toast.makeText(MainActivity.this, "Xóa Thành Công", Toast.LENGTH_SHORT).show();
                             }
                         });
+
                         LoadData();
                         dialogSuaXoa.dismiss();
                     }
@@ -249,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
                     int sl = sach.getSoLuong() - 1;
                     mData.child("thongTinSach").child(sach.getId()).child("soLuong").setValue(sl);
                     LoadData();
-                    Toast.makeText(MainActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Tạo phiếu thành công", Toast.LENGTH_SHORT).show();
                     dialogThem.dismiss();
                 }else {
                     Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
@@ -329,9 +343,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         dialogSua.show();
-    }
-
-    private void showSeachDialog() {
     }
 
     private void showThemSachDialog() {

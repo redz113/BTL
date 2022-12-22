@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,17 +16,19 @@ import com.example.btl.Models.thongTinSach;
 import com.example.btl.R;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public  class thongTinSachAdapter extends BaseAdapter {
+public  class thongTinSachAdapter extends BaseAdapter implements Filterable {
     Context context;
     int layout;
-    List<thongTinSach> arrSach;
+    List<thongTinSach> arrSach, arrSachOld;
 
     public thongTinSachAdapter(Context context, int layout, List<thongTinSach> arrSach) {
         this.context = context;
         this.layout = layout;
         this.arrSach = arrSach;
+        this.arrSachOld = arrSach;
     }
 
     @Override
@@ -69,5 +73,38 @@ public  class thongTinSachAdapter extends BaseAdapter {
         };
         Picasso.with(this.context).load(tt.getPath()).into(imgSach);
         return rView;
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String search = charSequence.toString().trim();
+                if (!search.isEmpty()){
+                    List<thongTinSach> list = new ArrayList<>();
+                    for (thongTinSach tt : arrSachOld){
+                        if (tt.getTenSach().toLowerCase().contains(search.toLowerCase())
+                        || tt.getTacGia().toLowerCase().contains(search.toLowerCase())
+                        || tt.getTheLoai().toLowerCase().contains(search.toLowerCase())){
+                            list.add(tt);
+                        }
+                    }
+                    arrSach = list;
+                }else {
+                    arrSach = arrSachOld;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = arrSach;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                arrSach = (List<thongTinSach>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 }

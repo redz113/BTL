@@ -14,9 +14,6 @@
         android:theme="@style/Theme.BTL"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivityPhieuDaDuyet"
-            android:exported="false" />
-        <activity
             android:name=".MainActivityPhieuMuon"
             android:exported="false" />
         <activity

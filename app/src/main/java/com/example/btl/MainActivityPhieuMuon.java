@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import com.example.btl.Adapter.phieuMuonAdapter;
 import com.example.btl.Models.phieuMuon;
+import com.example.btl.Models.thongTinSach;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivityPhieuMuon extends AppCompatActivity{
-    int layoutDuyet = 0;
+    SearchView searchView;
     List<phieuMuon> listPM;
     ListView lvPM;
     phieuMuonAdapter adapter;
@@ -56,11 +58,11 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
 
         mData = FirebaseDatabase.getInstance().getReference();
         lvPM = findViewById(R.id.lvPhieuMuon);
-        listPM = new ArrayList<phieuMuon>();
-        adapter = new phieuMuonAdapter(this, R.layout.thong_tin_phieu_muon, listPM);
+        listPM = new ArrayList<>();
+        adapter = new phieuMuonAdapter(MainActivityPhieuMuon.this, R.layout.thong_tin_phieu_muon, listPM);
         lvPM.setAdapter(adapter);
 
-
+        LoadData();
         lvPM.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -89,15 +91,7 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
                         if (p.getTrangThai() == 0){
                             Toast.makeText(MainActivityPhieuMuon.this, "Không thể xóa do phiếu mượn chưa được duyệt", Toast.LENGTH_SHORT).show();
                         }else {
-                            mData.child("phieuMuon").child(p.getId()).removeValue(new DatabaseReference.CompletionListener() {
-                                @Override
-                                public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                                    if (error == null){
-                                        LoadData();
-                                        Toast.makeText(MainActivityPhieuMuon.this, "Xóa thành công", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
+                            deletePM(p);
                         }
                     }
                 });
@@ -107,7 +101,6 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
             }
         });
 
-        LoadData();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -143,18 +136,23 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
         nguoiTra.setText(pm.getNguoiMuon());
         ngayMuon.setText(pm.getNgayMuon());
 
-        mData.child("thongTinSach").child(pm.getIdSach()).child("viTri").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String vt = snapshot.getValue(String.class);
-                viTri.setText(vt);
-            }
+        //Lấy thông tin vị trí Sách
+        try {
+            mData.child("thongTinSach").child(pm.getIdSach()).child("viTri").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String vt = snapshot.getValue(String.class);
+                    viTri.setText(vt);
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            viTri.setText("null");
+        }
 
 
         btnClose.setOnClickListener(new View.OnClickListener() {
@@ -179,11 +177,19 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
                     map.put("ngayTra", date);
                     mData.child("phieuMuon").child(pm.getId()).updateChildren(map);
 
+                    //số lượng sách +1
                     mData.child("thongTinSach").child(pm.getIdSach()).child("soLuong").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            int sl = snapshot.getValue(int.class);
-                            mData.child("thongTinSach").child(pm.getIdSach()).child("soLuong").setValue(sl + 1);
+                            try {
+                                int sl = snapshot.getValue(int.class);
+                                mData.child("thongTinSach").child(pm.getIdSach()).child("soLuong").setValue(sl + 1);
+                                Toast.makeText(MainActivityPhieuMuon.this, "Duyệt thành công", Toast.LENGTH_SHORT).show();
+                            }catch (Exception e){
+                                deletePmNoExist(pm);
+                                dialog.dismiss();
+                                Toast.makeText(MainActivityPhieuMuon.this, "Xóa thành công", Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                         @Override
@@ -192,15 +198,8 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
                         }
                     });
 
-                    if (layoutDuyet == 0){
-                        LoadData();
-                    }else if (layoutDuyet == 1){
-                        showPhieuDaDuyet();
-                    }else  if (layoutDuyet == -1){
-                        showPhieuChuaDuyet();
-                    }
+                    LoadData();
                     setDuyet(btnDuyet, btnHuyDuyet);
-                    Toast.makeText(MainActivityPhieuMuon.this, "Duyệt thành công", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -211,12 +210,21 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("trangThai", 0);
                 map.put("ngayTra", "null");
+                mData.child("phieuMuon").child(pm.getId()).updateChildren(map);
 
+                //Số lượng sách -1
                 mData.child("thongTinSach").child(pm.getIdSach()).child("soLuong").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        int sl = snapshot.getValue(int.class);
-                        mData.child("thongTinSach").child(pm.getIdSach()).child("soLuong").setValue(sl - 1);
+                        try {
+                            int sl = snapshot.getValue(int.class);
+                            mData.child("thongTinSach").child(pm.getIdSach()).child("soLuong").setValue(sl - 1);
+                            Toast.makeText(MainActivityPhieuMuon.this, "Hủy thành công", Toast.LENGTH_SHORT).show();
+                        }catch (Exception e){
+                            deletePmNoExist(pm);
+                            dialog.dismiss();
+                            Toast.makeText(MainActivityPhieuMuon.this, "Xóa thành công", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -224,30 +232,47 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
 
                     }
                 });
-
-                mData.child("phieuMuon").child(pm.getId()).updateChildren(map, new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                        if (error == null){
-
-                            if (layoutDuyet == 0){
-                                LoadData();
-                            }else if (layoutDuyet == 1){
-                                showPhieuDaDuyet();
-                            }else  if (layoutDuyet == -1){
-                                showPhieuChuaDuyet();
-                            }
-                            setHuyDuyet(btnDuyet, btnHuyDuyet);
-                            Toast.makeText(MainActivityPhieuMuon.this, "Hủy duyệt thành công", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                LoadData();
+                setHuyDuyet(btnDuyet, btnHuyDuyet);
             }
         });
 
         dialog.show();
     }
 
+        //Xóa phiếu mượn không tồn tại - có AlertDialog
+    private void deletePmNoExist(phieuMuon pm) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivityPhieuMuon.this);
+        builder.setTitle("Thông tin sách không tồn tại");
+        builder.setMessage("Xóa?");
+        builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                deletePM(pm);
+            }
+        });
+        builder.create().show();
+    }
+        //Xóa phiếu mượn
+    private void deletePM(phieuMuon p) {
+        mData.child("phieuMuon").child(p.getId()).removeValue(new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                if (error == null){
+                    LoadData();
+                    Toast.makeText(MainActivityPhieuMuon.this, "Xóa thành công", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+        //
     private void setHuyDuyet(Button btnDuyet, Button btnHuyDuyet) {
         btnDuyet.setEnabled(true);
         btnDuyet.setText("duyệt");
@@ -257,7 +282,6 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
         btnHuyDuyet.setEnabled(false);
         btnHuyDuyet.setText("");
     }
-
     private void setDuyet(Button btnDuyet, Button btnHuyDuyet) {
         btnDuyet.setEnabled(false);
         btnDuyet.setText("");
@@ -268,16 +292,27 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
         btnHuyDuyet.setText("Hủy duyệt");
     }
 
-
+        //
     private void LoadData() {
-        layoutDuyet = 0;
         listPM.clear();
-        mData.child("phieuMuon").addChildEventListener(new ChildEventListener() {
+        Query query = mData.child("phieuMuon").orderByChild("id");
+        query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                int flag = 0;
                 phieuMuon p = snapshot.getValue(phieuMuon.class);
-                listPM.add(p);
-                adapter.notifyDataSetChanged();
+
+                for (int i=0; i<listPM.size(); i++){
+                    if (p.getId() == listPM.get(i).getId()){
+                        flag = 1;
+                        break;
+                    }
+                }
+
+                if (flag == 0){
+                    listPM.add(p);
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -304,15 +339,26 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_phieu_muon, menu);
-        return super.onCreateOptionsMenu(menu);
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-            case R.id.search:
-                showSearch();
-                break;
             case R.id.QLS:
                 showQLS();
                 break;
@@ -329,15 +375,14 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
     }
 
     private void showPhieuChuaDuyet() {
-        layoutDuyet = -1;
         listPM.clear();
         Query query = mData.child("phieuMuon").orderByChild("trangThai").equalTo(0);
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 phieuMuon p = snapshot.getValue(phieuMuon.class);
-                listPM.add(p);
-                adapter.notifyDataSetChanged();
+                    listPM.add(p);
+                    adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -363,15 +408,14 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
     }
 
     private void showPhieuDaDuyet() {
-        layoutDuyet = 1;
         listPM.clear();
         Query query = mData.child("phieuMuon").orderByChild("trangThai").equalTo(1);
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 phieuMuon p = snapshot.getValue(phieuMuon.class);
-                listPM.add(p);
-                adapter.notifyDataSetChanged();
+                    listPM.add(p);
+                    adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -393,8 +437,6 @@ public class MainActivityPhieuMuon extends AppCompatActivity{
 
             }
         });
-//        Intent intent = new Intent(MainActivityPhieuMuon.this, MainActivityPhieuDaDuyet.class);
-//        startActivity(intent);
     }
 
     private void showQLS() {

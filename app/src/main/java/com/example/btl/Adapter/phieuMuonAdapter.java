@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,17 +19,20 @@ import androidx.annotation.Nullable;
 import com.example.btl.Models.phieuMuon;
 import com.example.btl.R;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class phieuMuonAdapter extends BaseAdapter {
+public class phieuMuonAdapter extends BaseAdapter implements Filterable {
     Context context;
     int resource;
-    List<phieuMuon> listPM;
+    List<phieuMuon> listPM, listPMold;
 
     public phieuMuonAdapter(Context context, int resource, List<phieuMuon> listPM) {
         this.context = context;
         this.resource = resource;
         this.listPM = listPM;
+        this.listPMold = listPM;
     }
 
     @Override
@@ -72,5 +77,37 @@ public class phieuMuonAdapter extends BaseAdapter {
         }
 
         return customView;
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String search = charSequence.toString().trim();
+                if (!search.isEmpty()){
+                    List<phieuMuon> list = new ArrayList<>();
+                    for (phieuMuon p : listPMold){
+                        if (p.getNguoiMuon().toLowerCase().contains(search.toLowerCase())){
+                            list.add(p);
+                        }
+                    }
+                    listPM = list;
+                }else {
+                    listPM = listPMold;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = listPM;
+
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                listPM = (List<phieuMuon>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 }

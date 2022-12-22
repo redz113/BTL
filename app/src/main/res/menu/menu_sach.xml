@@ -8,10 +8,11 @@
         android:id="@+id/search"
         android:icon="@drawable/search"
         android:title="Search"
-        app:actionViewClass="android.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always"/>
     <item
         android:id="@+id/addSach"
         android:title="Thêm sách mới"
-        android:icon="@drawable/add" />
+        android:icon="@drawable/add"
+        app:showAsAction="always"/>
 </menu>
